@@ -1,0 +1,66 @@
+# 1. assignemtns status
+assignments=select * from user_assignments, users, \
+/* 3. include testcase, testsuite - begin */ \
+(select UATPTC.*, ntc.name as tcname, ntc.id as tcid, nts.name as tsname, nts.id as tsid \
+from nodes_hierarchy as nts INNER JOIN nodes_hierarchy as ntc INNER JOIN nodes_hierarchy as ntv, \
+/* 2. get testcase version id - begin */ \
+(select TPTCV.tcversion_id as tcvid, UA.* from testplan_tcversions as TPTCV, \
+/* 1. get assignements - being */ \
+(select user_assignments.id as aid, users.id as uid, user_assignments.feature_id as fid from builds, user_assignments, users, \
+(select * from nodes_hierarchy where \
+(parent_id=(select id from nodes_hierarchy where (name='%s') AND (node_type_id=1)) AND (node_type_id=5))) as tp \
+where ( (tp.id=builds.testplan_id) AND (tp.name='%s') AND (builds.name='%s') AND \
+(user_assignments.build_id=builds.id) AND \
+(user_assignments.user_id=users.id) AND (users.login!='__nobody__'))) as UA \
+/* 1. get assignemtns - end */ \
+where (TPTCV.id=UA.fid)) as UATPTC \
+/* 2. get testcase version id - end */ \
+where (ntv.id=UATPTC.tcvid) AND \
+(ntc.id=ntv.parent_id) AND \
+(nts.id=ntc.parent_id)) as TCs \
+/* 3. include testcase, testsuite - end */ \
+where (user_assignments.id=TCs.aid) AND \
+(users.id=TCs.uid)
+
+# 2. executions status
+executions=select * from executions, users, \
+/* 3. get tcversion node - begin */ \
+(select TCEXE.*, ntc.name as tcname, ntc.id as tcid, nts.name as tsname, nts.id as tsid \
+from nodes_hierarchy as nts INNER JOIN nodes_hierarchy as ntc INNER JOIN nodes_hierarchy as ntv, \
+/* 2. execution status by proj, tp, build, tester - begin */ \
+(select executions.tcversion_id as tcvid, executions.id as exeid, users.id as userid from executions, users, \
+/* 1. most recent execution - begin */ \
+(select MAX(executions.id) maxium \
+ from builds, executions, \
+ (select * \
+  from nodes_hierarchy \
+  where (parent_id=(select id from nodes_hierarchy where (name='%s') AND (node_type_id=1)) AND (node_type_id=5))) as TP \
+ where ((TP.id=executions.testplan_id) AND \
+       (TP.name='%s') AND \
+       (executions.build_id=builds.id) AND \
+       (builds.name='%s')) GROUP BY executions.tcversion_id) as M \
+/* 1. most recent execution - end */ \
+where (executions.id=M.maxium) AND \
+      (executions.tester_id=users.id) \
+      AND (users.login!='__nobody__')) as TCEXE \
+/* 2. execution status by proj, tp, build, tester - end */ \
+where (ntv.id=TCEXE.tcvid) AND \
+(ntc.id=ntv.parent_id) AND \
+(nts.id=ntc.parent_id)) as TCs\
+/* 3. get tcversion node - end */ \
+where (users.id=TCs.userid) and (executions.id=TCs.exeid)
+
+# 3. VAS-X所有的testplan名字
+testplans=SELECT ntp.name FROM nodes_hierarchy AS npro INNER JOIN nodes_hierarchy AS ntp \
+WHERE (npro.name='%s') AND (npro.node_type_id=1) AND \
+(ntp.parent_id=npro.id) and (ntp.node_type_id=5)
+
+# 4. testplan下所有的build
+builds=SELECT builds.name FROM builds, nodes_hierarchy \
+WHERE (nodes_hierarchy.name='%s') AND (nodes_hierarchy.id=builds.testplan_id)
+
+# 5. build分配了用例的全部执行测试人员
+testers=SELECT users.login FROM users, \
+(SELECT DISTINCT user_assignments.user_id FROM user_assignments, builds \
+WHERE (builds.name='%s') AND (builds.id=user_assignments.build_id)) AS UID \
+WHERE (users.id=UID.user_id)

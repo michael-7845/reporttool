@@ -1,0 +1,10 @@
+dev_bug=SELECT * FROM bugs INNER JOIN products ON bugs.product_id=products.id \
+        WHERE products.name='%s' AND bugs.cf_bug_type='defect' \
+        AND (bugs.bug_status='New' OR bugs.bug_status='Assigned' OR bugs.bug_status='Fixed' OR bugs.bug_status='Open')
+test_bug=SELECT * FROM bugs INNER JOIN products ON bugs.product_id=products.id \
+        WHERE products.name='%s' AND bugs.cf_bug_type='defect' AND \
+        (bugs.bug_status='Feedback' OR bugs.bug_status='Resolved')
+all_component=SELECT components.id, components.name FROM products, components \
+        WHERE products.name='%s' AND components.product_id=products.id
+products=X-Product,XS-KK,XS-Product,Z-Product
+projects=X,XS,Z

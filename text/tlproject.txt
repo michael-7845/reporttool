@@ -1,0 +1,23 @@
+project: VASAPP
+
+1. testplan: HiBeam
+ * build: Ali.Z1.140410 - jianjun.duan, qiao.qu, yan.yu, 
+ * build: hibeam2.2.336 - yan.yu, 
+ * build: hibeam2.2.376 - yan.yu, 
+ * build: hibeam2.2.378 - yan.yu, 
+ * build: hibeam2.2.379 - yan.yu, 
+ * build: hibeam2.2.383 - yan.yu, 
+ * build: XS-KK.ROM.1st - jianjun.duan, yan.yu, 
+ * build: XS-KK.ROM.2nd - yan.yu, caixia.jing, 
+2. testplan: SmartPause
+ * build: M4_SS4020_S10_Ver200 - qiao.qu, 
+ * build: M4_SS4040_S10_Ver200 - qiao.qu, 
+3. testplan: HiConnect
+ * build: hiconnect140404 - jianjun.duan, 
+ * build: XS-KK.ROM.1st - jianjun.duan, yan.yu, 
+ * build: XS-KK.ROM.2nd - yan.yu, caixia.jing, 
+4. testplan: Slr
+ * build: 140418_dev - jianjun.duan, 
+ * build: Ali.Z1.140410 - jianjun.duan, qiao.qu, yan.yu, 
+5. testplan: HiCamera
+ * build: XS.KK_1st - jianjun.duan, 
